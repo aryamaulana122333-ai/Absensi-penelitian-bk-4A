@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Absensi BK A – Penelitian BK</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#07101f;color:#e2e8f0;font-family:'Nunito','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;}
+.blob{position:fixed;border-radius:50%;pointer-events:none;z-index:0;}
+.b1{top:-200px;right:-160px;width:520px;height:520px;background:radial-gradient(circle,rgba(99,102,241,.16) 0%,transparent 65%);}
+.b2{bottom:-180px;left:-150px;width:480px;height:480px;background:radial-gradient(circle,rgba(16,185,129,.12) 0%,transparent 65%);}
+.wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding-bottom:80px;}
+.loading-screen{position:fixed;inset:0;background:#07101f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px;}
+.spinner{width:40px;height:40px;border:3px solid rgba(129,140,248,.2);border-top:3px solid #818cf8;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-txt{font-size:13px;color:#475569;}
+.hero{text-align:center;padding:44px 24px 24px;}
+.pill{display:inline-block;background:rgba(129,140,248,.13);border:1px solid rgba(129,140,248,.28);border-radius:100px;padding:5px 16px;font-size:11px;color:#a5b4fc;letter-spacing:.07em;font-weight:700;text-transform:uppercase;margin-bottom:18px;}
+.hero h1{font-size:46px;font-weight:900;line-height:1.05;margin:0 0 10px;background:linear-gradient(135deg,#f1f5f9 20%,#818cf8 60%,#34d399 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.03em;}
+.hero p{font-size:12px;color:#334155;margin-bottom:26px;}
+.ring-wrap{position:relative;width:124px;height:124px;margin:0 auto 22px;display:flex;align-items:center;justify-content:center;}
+.ring-inner{position:absolute;display:flex;flex-direction:column;align-items:center;}
+.ring-pct{font-size:26px;font-weight:900;color:#e2e8f0;line-height:1;}
+.ring-lbl{font-size:11px;color:#64748b;}
+#ring-circle{transition:stroke-dashoffset .7s ease;}
+.chips{display:flex;justify-content:center;gap:10px;}
+.chip{border-radius:14px;padding:10px 18px;text-align:center;min-width:64px;border:1px solid;}
+.chip-n{font-size:22px;font-weight:900;line-height:1;}
+.chip-l{font-size:10px;color:#64748b;margin-top:3px;letter-spacing:.07em;text-transform:uppercase;}
+.tabs{display:flex;margin:0 16px 14px;background:rgba(255,255,255,.04);border-radius:16px;padding:5px;gap:4px;}
+.tab{flex:1;padding:11px 4px;border-radius:12px;border:none;background:transparent;color:#475569;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.tab.on{background:rgba(129,140,248,.18);color:#a5b4fc;}
+.tab.adm{background:rgba(248,113,113,.14);color:#f87171;}
+.sec{padding:0 16px;}
+.search{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;color:#e2e8f0;font-size:13px;font-family:inherit;outline:none;margin-bottom:10px;}
+.search::placeholder{color:#334155;}
+
+/* CARDS */
+.card{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:14px;border:1px solid;cursor:pointer;margin-bottom:7px;transition:all .15s;}
+.card.hadir{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.2);cursor:default;}
+.card.belum{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.06);}
+.card.belum:hover{background:rgba(255,255,255,.05);}
+/* nomor — sekarang putih terang */
+.cidx{font-size:12px;font-weight:700;color:#94a3b8;min-width:22px;text-align:right;flex-shrink:0;}
+.cmid{flex:1;min-width:0;}
+.cname{font-size:13px;font-weight:700;color:#e2e8f0;margin:0;}
+/* NIM di bawah nama */
+.cnim{font-size:11px;color:#64748b;margin:2px 0 0;letter-spacing:.03em;}
+.ctime{font-size:11px;color:#34d399;margin:3px 0 0;font-weight:600;}
+.chint{font-size:11px;color:#475569;margin:3px 0 0;}
+.cdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;}
+.cdot.on{background:rgba(52,211,153,.18);color:#34d399;border:1px solid rgba(52,211,153,.3);}
+.cdot.off{background:rgba(255,255,255,.04);color:#475569;border:1px solid rgba(255,255,255,.06);}
+
+.block{margin-bottom:28px;}
+.bhead{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06);}
+.bdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.bttl{font-size:13px;font-weight:700;color:#cbd5e1;}
+.rrow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.ri{font-size:11px;color:#64748b;width:22px;flex-shrink:0;}
+.rmid{flex:1;min-width:0;}
+.rn{font-size:13px;color:#cbd5e1;}
+.rnim{font-size:11px;color:#475569;margin-top:1px;}
+.rt{font-size:12px;color:#34d399;font-weight:700;flex-shrink:0;}
+.undo-btn{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);border-radius:6px;padding:2px 8px;color:#f87171;font-size:11px;cursor:pointer;font-family:inherit;flex-shrink:0;}
+.admin-box{background:rgba(129,140,248,.07);border:1px solid rgba(129,140,248,.18);border-radius:16px;padding:22px;}
+.admin-panel{background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.18);border-radius:16px;padding:22px;}
+.atitle{font-size:14px;font-weight:800;color:#a5b4fc;margin-bottom:6px;}
+.asub{font-size:12px;color:#64748b;margin-bottom:16px;line-height:1.6;}
+.pinput{display:block;width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 14px;color:#e2e8f0;font-size:13px;font-family:inherit;outline:none;margin-bottom:8px;}
+.pinput.err{border-color:#f87171;}
+.perr{font-size:12px;color:#f87171;margin-bottom:10px;}
+.login-btn{width:100%;background:rgba(129,140,248,.22);border:1px solid rgba(129,140,248,.3);border-radius:10px;padding:12px 0;color:#a5b4fc;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;}
+.reset-btn{display:block;width:100%;background:rgba(248,113,113,.14);border:1px solid rgba(248,113,113,.28);border-radius:10px;padding:12px 0;color:#f87171;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.logout-btn{display:block;width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 0;color:#475569;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.empty{font-size:13px;color:#475569;text-align:center;padding:24px 0;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:100;padding:24px;backdrop-filter:blur(8px);}
+.modal{background:#0f1724;border:1px solid rgba(129,140,248,.2);border-radius:24px;padding:32px 26px;max-width:320px;width:100%;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.7);}
+.micon{font-size:38px;margin-bottom:12px;}
+.mq{font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:6px;}
+.mname{font-size:17px;font-weight:900;color:#e2e8f0;margin-bottom:4px;}
+.mnim{font-size:12px;color:#64748b;margin-bottom:8px;}
+.mnote{font-size:12px;color:#475569;margin-bottom:24px;}
+.mbtns{display:flex;gap:10px;}
+.mcancel{flex:1;padding:13px 0;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:transparent;color:#475569;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+.mok{flex:1;padding:13px 0;border-radius:12px;border:none;background:linear-gradient(135deg,#4f46e5,#059669);color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;}
+.mok:disabled{opacity:.5;cursor:not-allowed;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);border-radius:14px;padding:13px 22px;font-size:12px;font-weight:700;z-index:200;white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,.5);animation:fadeUp .3s ease;}
+.tok{background:#071a12;border:1px solid rgba(52,211,153,.3);color:#34d399;}
+.twarn{background:#1a070c;border:1px solid rgba(248,113,113,.3);color:#f87171;}
+.terr{background:#1a0f07;border:1px solid rgba(251,146,60,.3);color:#fb923c;}
+@keyframes fadeUp{from{opacity:0;transform:translateX(-50%) translateY(10px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div>
+
+<div class="loading-screen" id="loading-screen">
+  <div class="spinner"></div>
+  <p class="load-txt">Memuat data absensi...</p>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="pill">BK A · Penelitian BK · 2025/2026</div>
+    <h1>Absensi<br/>Kelas</h1>
+    <p>Rabu 10:00–12:30 · Ruang CC.404</p>
+    <div class="ring-wrap">
+      <svg width="124" height="124" style="transform:rotate(-90deg)">
+        <circle cx="62" cy="62" r="52" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="9"/>
+        <circle id="ring-circle" cx="62" cy="62" r="52" fill="none" stroke="url(#g)" stroke-width="9" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+        <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#34d399"/></linearGradient></defs>
+      </svg>
+      <div class="ring-inner"><span class="ring-pct" id="pct-txt">0%</span><span class="ring-lbl">hadir</span></div>
+    </div>
+    <div class="chips">
+      <div class="chip" style="background:rgba(52,211,153,.11);border-color:rgba(52,211,153,.3)"><div class="chip-n" style="color:#34d399" id="chip-hadir">0</div><div class="chip-l">Hadir</div></div>
+      <div class="chip" style="background:rgba(248,113,113,.11);border-color:rgba(248,113,113,.3)"><div class="chip-n" style="color:#f87171" id="chip-belum">35</div><div class="chip-l">Belum</div></div>
+      <div class="chip" style="background:rgba(129,140,248,.11);border-color:rgba(129,140,248,.3)"><div class="chip-n" style="color:#818cf8">35</div><div class="chip-l">Total</div></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('absen')">✏ Absen</button>
+    <button class="tab" onclick="switchTab('rekap')">📋 Rekap</button>
+    <button class="tab" id="tab-admin" onclick="switchTab('admin')">🔒 Admin</button>
+  </div>
+
+  <div class="sec" id="view-absen">
+    <input class="search" placeholder="🔍  Cari nama..." oninput="filterCards(this.value)"/>
+    <div id="card-list"></div>
+  </div>
+
+  <div class="sec hidden" id="view-rekap">
+    <div class="block">
+      <div class="bhead"><span class="bdot" style="background:#34d399"></span><span class="bttl" id="rekap-hadir-title">✅ Hadir (0)</span></div>
+      <div id="rekap-hadir-list"><p class="empty">Belum ada yang absen.</p></div>
+    </div>
+    <div class="block">
+      <div class="bhead"><span class="bdot" style="background:#f87171"></span><span class="bttl" id="rekap-belum-title">❌ Belum (35)</span></div>
+      <div id="rekap-belum-list"></div>
+    </div>
+  </div>
+
+  <div class="sec hidden" id="view-admin">
+    <div class="admin-box" id="admin-login">
+      <p class="atitle">🔒 Login Admin</p>
+      <p class="asub">Masukkan password untuk akses fitur admin.</p>
+      <input class="pinput" type="password" id="pass-input" placeholder="Password..." onkeydown="if(event.key==='Enter')tryLogin()"/>
+      <p class="perr hidden" id="pass-err">Password salah.</p>
+      <button class="login-btn" onclick="tryLogin()">Masuk</button>
+    </div>
+    <div class="admin-panel hidden" id="admin-panel">
+      <p class="atitle" style="color:#f87171">🔓 Mode Admin Aktif</p>
+      <p class="asub">Undo absensi per orang bisa dilakukan di tab Rekap. Reset semua data di tombol bawah.</p>
+      <button class="reset-btn" onclick="resetAll()">🗑 Reset Semua Absensi</button>
+      <button class="logout-btn" onclick="logoutAdmin()">Keluar dari Admin</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="modal" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="micon">👋</div>
+    <p class="mq">Ini nama kamu?</p>
+    <p class="mname" id="modal-name"></p>
+    <p class="mnim" id="modal-nim"></p>
+    <p class="mnote">Setiap nama hanya bisa absen satu kali.</p>
+    <div class="mbtns">
+      <button class="mcancel" onclick="closeModal()">Bukan saya</button>
+      <button class="mok" id="btn-confirm" onclick="confirmAbsen()">Ya, Absen!</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast tok hidden" id="toast"></div>
+
+<script>
+const BIN_ID  = "GANTI_BIN_ID";
+const API_KEY = "GANTI_API_KEY";
+
+const STUDENTS = [
+  {no:1,  name:"FIRA ZAZKIA RAMADHANI",        nim:"2285240001"},
+  {no:2,  name:"GUSTINA RENA WIGUNA",           nim:"2285240004"},
+  {no:3,  name:"SYIFA DIANDINI",                nim:"2285240007"},
+  {no:4,  name:"SYIFAURROHMAT",                 nim:"2285240017"},
+  {no:5,  name:"NAYLA JULIETA",                 nim:"2285240021"},
+  {no:6,  name:"DEVINA NURI DWI PUTRI",         nim:"2285240024"},
+  {no:7,  name:"RAISYA CAHYA KAMILA",           nim:"2285240027"},
+  {no:8,  name:"PUSPITA NURHASANAH",            nim:"2285240029"},
+  {no:9,  name:"BENING MULIA NURRAHMI",         nim:"2285240031"},
+  {no:10, name:"AULIA NISA ERGIAN",             nim:"2285240033"},
+  {no:11, name:"FADEL MUHAMMAD",                nim:"2285240039"},
+  {no:12, name:"SIRLIE AMRI",                   nim:"2285240042"},
+  {no:13, name:"FITRI MAULIDAH",                nim:"2285240044"},
+  {no:14, name:"ORYZA PANJI PRATAMA",           nim:"2285240047"},
+  {no:15, name:"GALIH DWI PRATIWI",             nim:"2285240050"},
+  {no:16, name:"DWI PUTRI SYAHBILLA",           nim:"2285240053"},
+  {no:17, name:"RIFAT FITRY MADAINDI NAESAP",   nim:"2285240056"},
+  {no:18, name:"RENA ADELIA",                   nim:"2285240058"},
+  {no:19, name:"KAMENICO EKA NARADIPA",         nim:"2285240061"},
+  {no:20, name:"BUNGA AULIA WIJAYA",            nim:"2285240064"},
+  {no:21, name:"SRI SITI ZAHRA LESTARI",        nim:"2285240067"},
+  {no:22, name:"NADIN INDARTI RASYIDA",         nim:"2285240070"},
+  {no:23, name:"DIFA AURELIA AGUSTIN",          nim:"2285240073"},
+  {no:24, name:"AMANDA USHWATUN KHASANAH",      nim:"2285240075"},
+  {no:25, name:"GHINA NAILLAH",                 nim:"2285240078"},
+  {no:26, name:"REVANA SUCI NUR SAPITRI",       nim:"2285240081"},
+  {no:27, name:"EKY MUKAROMAH",                 nim:"2285240084"},
+  {no:28, name:"NADHIFA KAMILIA ZAHRA",         nim:"2285240091"},
+  {no:29, name:"ARYA MAULANA",                  nim:"2285240094"},
+  {no:30, name:"CHELSE RENATA NURFITRIANI",     nim:"2285240097"},
+  {no:31, name:"AFIFAH AFRA AL-GHINA",          nim:"2285240101"},
+  {no:32, name:"SHABRINA SYALWA QATHRUNNADA",   nim:"2285240103"},
+  {no:33, name:"RATU AZKA ZULFANI",             nim:"2285240106"},
+  {no:34, name:"AMANDAH SYAFIRAH ATMAJA",       nim:"2285240109"},
+  {no:35, name:"VASYA NIDAULHAQ ACHMAD YAMAN",  nim:"2285240111"},
+];
+
+const ADMIN_PASS="bka2026";
+let attended={},adminUnlocked=false,pendingStudent=null,toastTimer=null,saving=false;
+
+async function fetchData(){
+  const r=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
+  const j=await r.json(); return j.record||{};
+}
+async function pushData(data){
+  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":API_KEY},body:JSON.stringify(data)});
+}
+
+async function init(){
+  try{ attended=await fetchData(); }
+  catch{ showToast("Gagal memuat. Cek BIN_ID & API_KEY.","err"); }
+  document.getElementById("loading-screen").classList.add("hidden");
+  updateStats(); renderCards();
+}
+
+function switchTab(tab){
+  ["absen","rekap","admin"].forEach(t=>document.getElementById("view-"+t).classList.toggle("hidden",t!==tab));
+  document.querySelectorAll(".tab").forEach((el,i)=>{el.classList.remove("on","adm");if(["absen","rekap","admin"][i]===tab)el.classList.add(tab==="admin"?"adm":"on");});
+  if(tab==="rekap")renderRekap();
+}
+
+function renderCards(filter=""){
+  const list=document.getElementById("card-list"); list.innerHTML="";
+  const filtered=STUDENTS.filter(s=>s.name.toLowerCase().includes(filter.toLowerCase())||s.nim.includes(filter));
+  if(!filtered.length){list.innerHTML='<p class="empty">Nama tidak ditemukan.</p>';return;}
+  filtered.forEach(s=>{
+    const hadir=!!attended[s.nim];
+    const div=document.createElement("div");
+    div.className="card "+(hadir?"hadir":"belum");
+    div.innerHTML=`
+      <span class="cidx">${s.no}</span>
+      <div class="cmid">
+        <p class="cname">${s.name}</p>
+        <p class="cnim">${s.nim}</p>
+        ${hadir?`<p class="ctime">✓ Pukul ${attended[s.nim]}</p>`:`<p class="chint">Ketuk untuk absen</p>`}
+      </div>
+      <div class="cdot ${hadir?"on":"off"}">${hadir?"✓":"·"}</div>`;
+    if(!hadir)div.onclick=()=>openModal(s);
+    list.appendChild(div);
+  });
+}
+function filterCards(val){renderCards(val);}
+
+function updateStats(){
+  const hadir=STUDENTS.filter(s=>attended[s.nim]).length;
+  const belum=STUDENTS.length-hadir;
+  const pct=Math.round(hadir/STUDENTS.length*100);
+  document.getElementById("chip-hadir").textContent=hadir;
+  document.getElementById("chip-belum").textContent=belum;
+  document.getElementById("pct-txt").textContent=pct+"%";
+  document.getElementById("ring-circle").style.strokeDashoffset=2*Math.PI*52*(1-pct/100);
+}
+
+function openModal(s){
+  pendingStudent=s;
+  document.getElementById("modal-name").textContent=s.name;
+  document.getElementById("modal-nim").textContent=s.nim;
+  document.getElementById("btn-confirm").disabled=false;
+  document.getElementById("btn-confirm").textContent="Ya, Absen!";
+  document.getElementById("modal").classList.remove("hidden");
+}
+function closeModal(){document.getElementById("modal").classList.add("hidden");pendingStudent=null;}
+
+async function confirmAbsen(){
+  if(!pendingStudent||saving)return;
+  saving=true;
+  const btn=document.getElementById("btn-confirm");
+  btn.disabled=true; btn.textContent="Menyimpan...";
+  try{
+    const fresh=await fetchData();
+    if(fresh[pendingStudent.nim]){
+      attended=fresh; updateStats(); renderCards(document.querySelector(".search").value);
+      closeModal(); showToast("Nama ini sudah absen sebelumnya.","warn");
+    } else {
+      const now=new Date(),t=now.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+      fresh[pendingStudent.nim]=t; await pushData(fresh); attended=fresh;
+      updateStats(); renderCards(document.querySelector(".search").value);
+      closeModal(); showToast(`${pendingStudent.name} berhasil absen pukul ${t}`);
+    }
+  }catch{showToast("Gagal menyimpan. Coba lagi.","err");}
+  saving=false; btn.disabled=false; btn.textContent="Ya, Absen!";
+}
+
+function renderRekap(){
+  const hl=STUDENTS.filter(s=>attended[s.nim]);
+  const bl=STUDENTS.filter(s=>!attended[s.nim]);
+  document.getElementById("rekap-hadir-title").textContent=`✅ Hadir (${hl.length})`;
+  document.getElementById("rekap-belum-title").textContent=`❌ Belum (${bl.length})`;
+  document.getElementById("rekap-hadir-list").innerHTML=!hl.length
+    ?'<p class="empty">Belum ada yang absen.</p>'
+    :hl.map((s,i)=>`
+      <div class="rrow">
+        <span class="ri">${i+1}</span>
+        <div class="rmid"><p class="rn">${s.name}</p><p class="rnim">${s.nim}</p></div>
+        <span class="rt">${attended[s.nim]}</span>
+        ${adminUnlocked?`<button class="undo-btn" onclick="undoAbsen('${s.nim}')">undo</button>`:""}
+      </div>`).join("");
+  document.getElementById("rekap-belum-list").innerHTML=!bl.length
+    ?'<p class="empty">🎉 Semua sudah hadir!</p>'
+    :bl.map((s,i)=>`
+      <div class="rrow" style="opacity:.4">
+        <span class="ri">${i+1}</span>
+        <div class="rmid"><p class="rn">${s.name}</p><p class="rnim">${s.nim}</p></div>
+      </div>`).join("");
+}
+
+async function undoAbsen(nim){
+  try{const f=await fetchData();delete f[nim];await pushData(f);attended=f;updateStats();renderRekap();showToast("Absensi dibatalkan","warn");}
+  catch{showToast("Gagal. Coba lagi.","err");}
+}
+
+function tryLogin(){
+  const val=document.getElementById("pass-input").value;
+  if(val===ADMIN_PASS){adminUnlocked=true;document.getElementById("admin-login").classList.add("hidden");document.getElementById("admin-panel").classList.remove("hidden");document.getElementById("tab-admin").textContent="🔓 Admin";document.getElementById("pass-err").classList.add("hidden");}
+  else{document.getElementById("pass-err").classList.remove("hidden");document.getElementById("pass-input").classList.add("err");}
+}
+function logoutAdmin(){adminUnlocked=false;document.getElementById("admin-login").classList.remove("hidden");document.getElementById("admin-panel").classList.add("hidden");document.getElementById("tab-admin").textContent="🔒 Admin";document.getElementById("pass-input").value="";switchTab("absen");}
+
+async function resetAll(){
+  if(!confirm("Reset semua absensi? Tidak bisa dikembalikan."))return;
+  try{await pushData({});attended={};updateStats();renderCards();logoutAdmin();showToast("Semua absensi direset","warn");}
+  catch{showToast("Gagal reset. Coba lagi.","err");}
+}
+
+function showToast(msg,type="ok"){
+  const el=document.getElementById("toast");el.textContent=msg;
+  el.className="toast "+(type==="warn"?"twarn":type==="err"?"terr":"tok");
+  el.classList.remove("hidden");clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.add("hidden"),3000);
+}
+
+init();
+</script>
+</body>
+</html>
